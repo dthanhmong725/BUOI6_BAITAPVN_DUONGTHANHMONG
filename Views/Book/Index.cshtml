@@ -1,0 +1,206 @@
+@* ================================================================
+   VIEW: Views/Book/Index.cshtml
+   Hiển thị danh sách sách dạng Card với Sidebar thống kê
+   ================================================================ *@
+
+@model IEnumerable<BookStore.Models.Book>
+
+@{
+    ViewData["Title"] = "Danh Sách Sách";
+}
+
+@* ================================================================
+   LAYOUT VỚI SIDEBAR
+   ================================================================ *@
+<div class="container-fluid mt-4">
+    <div class="row">
+
+        @* ================================================================
+           SIDEBAR - THỐNG KÊ THỂ LOẠI
+           ================================================================ *@
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-ul"></i> Thể Loại Sách
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @* Hiển thị tổng số sách - Link về trang chính *@
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a asp-controller="Book" asp-action="Index" class="text-decoration-none">
+                                <strong>Tất cả sách</strong>
+                            </a>
+                            <span class="badge bg-primary rounded-pill">@ViewBag.TotalBooks</span>
+                        </li>
+
+                        @* Hiển thị số lượng sách theo từng thể loại *@
+                        @if (ViewBag.CategoriesWithCount != null)
+                        {
+                            @foreach (var category in ViewBag.CategoriesWithCount)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a asp-controller="Book" asp-action="FilterByCategory"
+                                       asp-route-categoryId="@category.CategoryId"
+                                       class="text-decoration-none @(ViewBag.SelectedCategoryId == category.CategoryId ? "text-primary fw-bold" : "")">
+                                        @category.CategoryName
+                                    </a>
+                                    <span class="badge bg-secondary rounded-pill">@category.BookCount</span>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        @* ================================================================
+           NỘI DUNG CHÍNH - DANH SÁCH SÁCH DẠNG CARD
+           ================================================================ *@
+        <div class="col-md-9">
+            @* HEADER *@
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="bi bi-book"></i> @ViewData["Title"]
+                </h2>
+                <a asp-controller="Book" asp-action="Create" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Thêm Sách Mới
+                </a>
+            </div>
+
+            @* FORM TÌM KIẾM *@
+            <form asp-controller="Book" asp-action="Search" method="get" class="mb-4">
+                <div class="input-group">
+                    <input type="text" name="keyword" class="form-control"
+                           placeholder="Tìm kiếm sách theo tên hoặc tác giả..."
+                           value="@ViewBag.Keyword" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Tìm
+                    </button>
+                    @if (!string.IsNullOrEmpty(ViewBag.Keyword))
+                    {
+                        <a asp-controller="Book" asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Xóa
+                        </a>
+                    }
+                </div>
+            </form>
+
+            @* KIỂM TRA DỮ LIỆU *@
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-info-circle"></i>
+                    @if (!string.IsNullOrEmpty(ViewBag.Keyword))
+                    {
+                        <span>Không tìm thấy sách nào với từ khóa "@ViewBag.Keyword"</span>
+                    }
+                    else
+                    {
+                        <span>Chưa có cuốn sách nào. Hãy thêm sách mới!</span>
+                    }
+                </div>
+            }
+            else
+            {
+                @* HIỂN THỊ SÁCH DẠNG CARD *@
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    @foreach (var book in Model)
+                    {
+                        <div class="col">
+                            <div class="card h-100 shadow-sm book-card">
+                                @* HÌNH ẢNH SÁCH *@
+                                @if (!string.IsNullOrEmpty(book.Image))
+                                {
+                                    <a asp-controller="Book" asp-action="Details" asp-route-id="@book.Id">
+                                        <img src="@book.Image" class="card-img-top book-image"
+                                             alt="@book.Title" style="height: 250px; object-fit: cover;" />
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Book" asp-action="Details" asp-route-id="@book.Id">
+                                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light"
+                                             style="height: 250px;">
+                                            <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
+                                        </div>
+                                    </a>
+                                }
+
+                                @* NỘI DUNG SÁCH *@
+                                <div class="card-body">
+                                    @* THỂ LOẠI *@
+                                    @if (book.Category != null)
+                                    {
+                                        <span class="badge bg-info mb-2">@book.Category.CategoryName</span>
+                                    }
+
+                                    @* TIÊU ĐỀ *@
+                                    <h5 class="card-title text-truncate" title="@book.Title">
+                                        <a asp-controller="Book" asp-action="Details"
+                                           asp-route-id="@book.Id" class="text-decoration-none text-dark">
+                                            @book.Title
+                                        </a>
+                                    </h5>
+
+                                    @* TÁC GIẢ *@
+                                    <p class="card-text text-muted small mb-2">
+                                        <i class="bi bi-person"></i> @book.Author
+                                    </p>
+
+                                    @* GIÁ *@
+                                    <p class="card-text fw-bold text-danger fs-5">
+                                        @book.Price.ToString("N0") VNĐ
+                                    </p>
+                                </div>
+
+                                @* NÚT HÀNH ĐỘNG *@
+                                <div class="card-footer bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a asp-controller="Book" asp-action="Details"
+                                           asp-route-id="@book.Id" class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-eye"></i> Chi tiết
+                                        </a>
+                                        <div>
+                                            <a asp-controller="Book" asp-action="Edit"
+                                               asp-route-id="@book.Id" class="btn btn-warning btn-sm">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-controller="Book" asp-action="Delete"
+                                               asp-route-id="@book.Id" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@* ================================================================
+   CSS CHO CARD SÁCH
+   ================================================================ *@
+<style>
+    .book-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    }
+
+    .book-image {
+        transition: transform 0.3s;
+    }
+
+    .book-card:hover .book-image {
+        transform: scale(1.05);
+    }
+</style>

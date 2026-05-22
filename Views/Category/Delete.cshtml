@@ -1,0 +1,78 @@
+@model BookStore.Models.Category
+
+@{
+    ViewData["Title"] = "Xóa Thể Loại";
+    
+    // Khai báo biến để tránh lặp code
+    var booksInDelete = Model.Books ?? new List<BookStore.Models.Book>();
+    var bookCountDelete = booksInDelete.Count;
+}
+
+<nav aria-label="breadcrumb" class="mt-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index">Thể loại</a></li>
+        <li class="breadcrumb-item active">Xóa</li>
+    </ol>
+</nav>
+
+<div class="container mt-4">
+    @* CẢNH BÁO *@
+    <div class="alert alert-danger">
+        <h4 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Cảnh Báo!</h4>
+        <p>Bạn có chắc chắn muốn xóa thể loại này không?</p>
+        @if (bookCountDelete > 0)
+        {
+            <hr>
+            <p class="mb-0 text-danger">
+                <strong>Lưu ý:</strong> Thể loại này có @bookCountDelete cuốn sách.
+                Khi xóa thể loại, các sách liên quan cũng sẽ bị xóa (Cascade Delete).
+            </p>
+        }
+    </div>
+
+    @* THÔNG TIN THỂ LOẠI *@
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="bi bi-trash"></i> Thông Tin Thể Loại Sẽ Bị Xóa</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Mã thể loại:</dt>
+                <dd class="col-sm-9">@Model.CategoryId</dd>
+
+                <dt class="col-sm-3">Tên thể loại:</dt>
+                <dd class="col-sm-9"><strong>@Model.CategoryName</strong></dd>
+
+                <dt class="col-sm-3">Số sách:</dt>
+                <dd class="col-sm-9">
+                    @if (bookCountDelete > 0)
+                    {
+                        <span class="badge bg-danger">@bookCountDelete cuốn sách sẽ bị xóa</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Không có sách</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    @* FORM XÁC NHẬN *@
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="CategoryId" />
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Hủy
+                    </a>
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="bi bi-trash"></i> Xác Nhận Xóa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

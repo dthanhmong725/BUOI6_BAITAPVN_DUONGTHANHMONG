@@ -1,0 +1,120 @@
+@* ================================================================
+   VIEW: Views/Book/Delete.cshtml
+   Xác nhận xóa sách
+   ================================================================ *@
+
+@model BookStore.Models.Book
+
+@{
+    ViewData["Title"] = "Xóa Sách";
+}
+
+@* ================================================================
+   BREADCRUMB
+   ================================================================ *@
+<nav aria-label="breadcrumb" class="mt-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Book" asp-action="Index">Sách</a>
+        </li>
+        <li class="breadcrumb-item active">Xóa</li>
+    </ol>
+</nav>
+
+@* ================================================================
+   CẢNH BÁO XÓA
+   ================================================================ *@
+<div class="container mt-4">
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">
+            <i class="bi bi-exclamation-triangle"></i> Cảnh Báo!
+        </h4>
+        <p>Bạn có chắc chắn muốn xóa cuốn sách này không? Hành động này không thể hoàn tác!</p>
+    </div>
+
+    @* ================================================================
+       THÔNG TIN SÁCH SẼ BỊ XÓA
+       ================================================================ *@
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-trash"></i> Thông Tin Sách Sẽ Bị Xóa
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @* HÌNH ẢNH *@
+                <div class="col-md-4">
+                    @if (!string.IsNullOrEmpty(Model.Image))
+                    {
+                        <img src="@Model.Image" class="img-thumbnail" alt="@Model.Title" />
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 bg-light rounded">
+                            <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
+                        </div>
+                    }
+                </div>
+
+                @* THÔNG TIN *@
+                <div class="col-md-8">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 30%;">Tiêu đề:</th>
+                            <td><strong>@Model.Title</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Tác giả:</th>
+                            <td>@Model.Author</td>
+                        </tr>
+                        <tr>
+                            <th>Thể loại:</th>
+                            <td>
+                                @if (Model.Category != null)
+                                {
+                                    <span class="badge bg-info">@Model.Category.CategoryName</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Giá:</th>
+                            <td class="text-danger fw-bold">@Model.Price.ToString("N0") VNĐ</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <tr>
+                                <th>Mô tả:</th>
+                                <td>@Model.Description</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ================================================================
+       FORM XÁC NHẬN XÓA
+       ================================================================ *@
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Delete">
+                @* Hidden field cho Id *@
+                <input type="hidden" asp-for="Id" />
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> Hủy
+                    </a>
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="bi bi-trash"></i> Xác Nhận Xóa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

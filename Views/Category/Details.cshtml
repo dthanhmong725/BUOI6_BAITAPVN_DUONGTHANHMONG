@@ -1,0 +1,105 @@
+@* ================================================================
+   VIEW: Views/Category/Details.cshtml
+   Chi tiết thể loại sách
+   ================================================================ *@
+
+@model BookStore.Models.Category
+
+@{
+    ViewData["Title"] = "Chi Tiết Thể Loại";
+}
+
+<nav aria-label="breadcrumb" class="mt-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index">Thể loại</a></li>
+        <li class="breadcrumb-item active">@Model.CategoryName</li>
+    </ol>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-tag"></i> @ViewData["Title"]</h2>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Sửa
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    @* THÔNG TIN THỂ LOẠI *@
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Thông Tin Thể Loại</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Mã thể loại:</dt>
+                <dd class="col-sm-9"><strong>@Model.CategoryId</strong></dd>
+
+                <dt class="col-sm-3">Tên thể loại:</dt>
+                <dd class="col-sm-9"><strong>@Model.CategoryName</strong></dd>
+
+                <dt class="col-sm-3">Số sách:</dt>
+                <dd class="col-sm-9">
+                    @{
+                        var bookCountDetails = Model.Books?.Count ?? 0;
+                    }
+                    <span class="badge bg-info">@bookCountDetails cuốn</span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    @* DANH SÁCH SÁCH TRONG THỂ LOẠI *@
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-book"></i> Sách thuộc thể loại này
+            </h5>
+        </div>
+        <div class="card-body">
+            @{
+                var booksInCategory = Model.Books ?? new List<BookStore.Models.Book>();
+            }
+            @if (!booksInCategory.Any())
+            {
+                <p class="text-muted mb-0">Không có sách nào trong thể loại này.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Tiêu đề</th>
+                                <th>Tác giả</th>
+                                <th>Giá</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var book in booksInCategory)
+                            {
+                                <tr>
+                                    <td>@book.Title</td>
+                                    <td>@book.Author</td>
+                                    <td class="text-danger fw-bold">@book.Price.ToString("N0") VNĐ</td>
+                                    <td>
+                                        <a asp-controller="Book" asp-action="Details" asp-route-id="@book.Id"
+                                           class="btn btn-info btn-sm">
+                                            <i class="bi bi-eye"></i> Chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

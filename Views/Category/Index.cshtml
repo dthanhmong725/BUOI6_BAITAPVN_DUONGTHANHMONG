@@ -1,0 +1,78 @@
+@* ================================================================
+   VIEW: Views/Category/Index.cshtml
+   Hiển thị danh sách thể loại sách
+   ================================================================ *@
+
+@model IEnumerable<BookStore.Models.Category>
+
+@{
+    ViewData["Title"] = "Quản Lý Thể Loại";
+}
+
+<div class="container mt-4">
+    @* HEADER *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-grid-3x3-gap"></i> @ViewData["Title"]
+        </h2>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Thêm Thể Loại Mới
+        </a>
+    </div>
+
+    @* KIỂM TRA DỮ LIỆU *@
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Chưa có thể loại nào. Hãy thêm thể loại mới!
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-bordered shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="text-center" style="width: 15%;">Mã thể loại</th>
+                        <th>Tên thể loại</th>
+                        <th class="text-center">Số sách</th>
+                        <th class="text-center" style="width: 30%;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model)
+                    {
+                        <tr>
+                            <td class="text-center align-middle">
+                                <span class="badge bg-secondary">@category.CategoryId</span>
+                            </td>
+                            <td class="align-middle">
+                                <strong>@category.CategoryName</strong>
+                            </td>
+                            <td class="text-center align-middle">
+                                @{
+                                    var bookCount = category.Books?.Count ?? 0;
+                                }
+                                <span class="badge bg-info">@bookCount cuốn</span>
+                            </td>
+                            <td class="text-center align-middle">
+                                <a asp-action="Details" asp-route-id="@category.CategoryId"
+                                   class="btn btn-info btn-sm me-1" title="Chi tiết">
+                                    <i class="bi bi-eye"></i> Chi tiết
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@category.CategoryId"
+                                   class="btn btn-warning btn-sm me-1" title="Sửa">
+                                    <i class="bi bi-pencil"></i> Sửa
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@category.CategoryId"
+                                   class="btn btn-danger btn-sm" title="Xóa">
+                                    <i class="bi bi-trash"></i> Xóa
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
